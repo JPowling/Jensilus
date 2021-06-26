@@ -10,7 +10,7 @@ class MacAddress internal constructor(val bytes: Array<UByte>, val netInterface:
 
     init {
         if (bytes.size != 6) {
-            throw AddressFormatException("Mac address bytes have an invalid length!")
+            throw AddressFormatException("Mac address bytes have an invalid length! (${bytes.size})")
         }
         if (containsMac(bytes)) {
             throw AddressFormatException("Mac address is already in use!")

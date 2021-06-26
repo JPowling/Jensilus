@@ -1,4 +1,4 @@
 package de.filius.components
 
-class Modem {
+class Modem: Component(0) {
 }
