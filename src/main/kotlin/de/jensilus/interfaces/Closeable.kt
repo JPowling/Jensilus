@@ -1,4 +1,4 @@
-package de.filius.`interface`
+package de.jensilus.interfaces
 
 interface Closeable {
 

@@ -1,10 +1,7 @@
-package de.filius.addresses
+package de.jensilus.addresses
 
-import de.filius.exceptions.AddressFormatException
+import de.jensilus.exceptions.AddressFormatException
 import kotlin.math.pow
-import kotlin.system.measureNanoTime
-import kotlin.system.measureTimeMillis
-import kotlin.time.measureTime
 
 class IPv4Address(val addressString: String, val netmaskString: String) {
 
