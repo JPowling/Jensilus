@@ -6,7 +6,7 @@ import de.jensilus.networking.Packet
 class NetworkSwitch : Device(20) {
 
     override fun onPacketReceive(netInterface: NetworkInterface, packet: Packet) {
-        networkInterfaces.first { it != netInterface }.sendPacket(packet)
+        networkInterfaces.filter { it != netInterface }.forEach { it.sendPacket(packet) }
     }
 
 }
