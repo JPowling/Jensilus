@@ -29,7 +29,6 @@ private fun String.addressToUInt(): UInt {
     return addressToBinaryString().toUInt(2)
 }
 
-
 private fun String.binaryToIPv4String(): String {
     var str = ""
     for (i in 0 until 4) {
@@ -41,8 +40,6 @@ private fun String.binaryToIPv4String(): String {
     }
     return str
 }
-
-
 
 private fun String.binaryToUByteArray(): Array<UByte> {
     val array = arrayOf<UByte>()
