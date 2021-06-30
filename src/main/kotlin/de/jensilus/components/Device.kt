@@ -59,6 +59,12 @@ open class Device(defaultNetworkInterfaces: Int) {
         return networkInterfaces.firstOrNull { it.isConnected && it.connection!!.isPartOf(other) } != null
     }
 
+    fun sendPacket(packet: Packet) {
+        for (netI in networkInterfaces) {
+            netI.sendPacket(packet)
+        }
+    }
+
     open fun onPacketReceive(netInterface: NetworkInterface, packet: Packet) {
         println("Packet from " + netInterface.macAddress.toString())
     }

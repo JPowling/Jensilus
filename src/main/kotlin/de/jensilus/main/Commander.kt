@@ -1,20 +1,12 @@
 package de.jensilus.main
 
-import de.jensilus.components.Device
-import de.jensilus.components.NetworkSwitch
+import de.jensilus.addresses.IPv4Address
+import de.jensilus.addresses.SubnetMask
 
 fun main(args: Array<String>) {
-    val switch = NetworkSwitch()
-    val d1 = Device(1)
-    val d2 = Device(1)
-    val d3 = Device(1)
+    val addr = IPv4Address("192.168.52.100")
+    val subn = SubnetMask("255.255.254.0")
 
-    println(d1.networkInterfaces.first().macAddress)
-    println(d2.networkInterfaces.first().macAddress)
-    println(d3.networkInterfaces.first().macAddress)
-
-    d1.connect(switch)
-    d2.connect(switch)
-    d3.connect(switch)
+    println(addr.getNetworkAddressBytes(subn))
 
 }

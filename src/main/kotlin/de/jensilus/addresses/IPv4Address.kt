@@ -1,38 +1,16 @@
 package de.jensilus.addresses
 
-import de.jensilus.exceptions.AddressFormatException
-import kotlin.math.pow
+class IPv4Address(val addressBytes: AddressBytes) {
 
-class IPv4Address(val addressString: String, val netmaskString: String) {
+    constructor(addressBytes: String) : this(AddressBytes.fromString(addressBytes))
 
-    val addressBytes: Array<UByte>
-    val netmaskBytes: Array<UByte>
-
-    init {
-        if (!addressString.isIPv4Format()) {
-            throw AddressFormatException("IPv4 address has a wrong format! ($addressString)")
-        }
-        if (!netmaskString.isNetmaskFormat()) {
-            throw AddressFormatException("Netmask has a wrong format! ($netmaskString)")
-        }
-
-        addressBytes = addressString.addressToUByteArray()
-        netmaskBytes = netmaskString.addressToUByteArray()
-    }
-
-    val networkAddressBytes: Array<UByte> by lazy {
+    fun getNetworkAddressBytes(subnetmask: SubnetMask): AddressBytes {
         val array = mutableListOf<UByte>()
 
         for (i in 0 until 4) {
-            array += addressBytes[i] and netmaskBytes[i]
+            array += addressBytes.bytes[i] and subnetmask.bytes[i]
         }
-        array.toTypedArray()
-    }
-
-    val maxDevices: Int by lazy {
-        val exp = (32 - netmaskString.addressToBinaryString().indexOfFirst { it == '0' })
-
-        2.0.pow(exp.toDouble()).toInt() - 2
+        return AddressBytes(array.toTypedArray())
     }
 
 }
@@ -47,24 +25,10 @@ private fun String.isNetmaskFormat(): Boolean {
     return !string.substring(indexOfZeros).contains("1")
 }
 
-private fun String.addressToBinaryString(): String {
-    if (!isIPv4Format()) {
-        throw AddressFormatException("IP address has wrong format! ($this)")
-    }
-    val binaryBytes = addressToUByteArray().map { it.toBinaryString() }
-
-    var concatenated = ""
-    binaryBytes.forEach { concatenated += it }
-    return concatenated
-}
-
 private fun String.addressToUInt(): UInt {
     return addressToBinaryString().toUInt(2)
 }
 
-private fun String.addressToUByteArray(): Array<UByte> {
-    return split(".").map { it.toUByte() }.toTypedArray()
-}
 
 private fun String.binaryToIPv4String(): String {
     var str = ""
@@ -78,23 +42,7 @@ private fun String.binaryToIPv4String(): String {
     return str
 }
 
-private fun UByte.toBinaryString(): String {
-    val zero = "00000000"
-    val binary = toString(2)
-    return zero.substring(binary.length) + binary
-}
 
-private fun Array<UByte>.toBinaryString(): String {
-    val binaryBytes = map { it.toBinaryString() }
-
-    var concatenated = ""
-    binaryBytes.forEach { concatenated += it }
-    return concatenated
-}
-
-private fun Array<UByte>.toIPv4String(): String {
-    return toBinaryString().binaryToIPv4String()
-}
 
 private fun String.binaryToUByteArray(): Array<UByte> {
     val array = arrayOf<UByte>()
@@ -107,4 +55,8 @@ private fun String.binaryToUByteArray(): Array<UByte> {
 
 private fun Array<UByte>.toUInt(): UInt {
     return toBinaryString().toUInt(2)
+}
+
+private fun Array<UByte>.toIPv4String(): String {
+    return toBinaryString().binaryToIPv4String()
 }

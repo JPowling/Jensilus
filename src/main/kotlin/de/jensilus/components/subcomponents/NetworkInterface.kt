@@ -29,7 +29,7 @@ class NetworkInterface(val owner: Device) {
     }
 
     fun onReceivePacket(packet: Packet) {
-
+        owner.onPacketReceive(this, packet)
     }
 
     fun onConnect() {
