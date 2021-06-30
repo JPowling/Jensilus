@@ -37,15 +37,6 @@ class IPv4Address(val addressString: String, val netmaskString: String) {
 
 }
 
-private fun String.isIPv4Format(): Boolean {
-    return matches(
-        Regex(
-            "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
-                    "\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\$"
-        )
-    )
-}
-
 private fun String.isNetmaskFormat(): Boolean {
     val string = addressToBinaryString()
     val indexOfZeros = string.indexOfFirst { it == '0' }
