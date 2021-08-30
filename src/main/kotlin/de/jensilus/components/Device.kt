@@ -5,7 +5,7 @@ import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
 
-open class Device(defaultNetworkInterfaces: Int) {
+open class Device(protected val defaultNetworkInterfaces: Int) {
 
     val networkInterfaces = mutableListOf<NetworkInterface>()
 

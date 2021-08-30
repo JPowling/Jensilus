@@ -7,7 +7,7 @@ import de.jensilus.networking.Packet
 
 class NetworkInterface(val owner: Device) {
 
-    val macAddress = MacAddress.createMac(this)
+    var macAddress = MacAddress.createMac(this)
 
     var connection: Connection? = null
     val isConnected: Boolean
