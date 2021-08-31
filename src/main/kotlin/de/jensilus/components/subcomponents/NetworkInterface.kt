@@ -5,7 +5,9 @@ import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
 import de.jensilus.main.Settings
 import de.jensilus.networking.Packet
-import de.jensilus.networking.RegistrationPacket
+import de.jensilus.networking.PacketDeregistrationSwitch
+import de.jensilus.networking.PacketRegistrationDevice
+import de.jensilus.networking.PacketRegistrationSwitch
 
 class NetworkInterface(val owner: Device) {
 
@@ -22,6 +24,7 @@ class NetworkInterface(val owner: Device) {
             }
             return false
         }
+    val isConnectedToDevice = isConnected && !isConnectedToSwitch
 
     fun sendPacket(packet: Packet): Boolean {
         connection?.run {
@@ -41,7 +44,15 @@ class NetworkInterface(val owner: Device) {
 
     fun onConnect() {
         if (owner !is NetworkSwitch && isConnectedToSwitch) {
-            sendPacket(RegistrationPacket(this))
+            sendPacket(PacketRegistrationDevice(this))
+        } else if (owner is NetworkSwitch && isConnectedToSwitch) {
+            sendPacket(PacketRegistrationSwitch(owner))
+        }
+    }
+
+    fun onPreDisconnect() {
+        if (owner is NetworkSwitch && isConnectedToSwitch) {
+            sendPacket(PacketDeregistrationSwitch(owner))
         }
     }
 

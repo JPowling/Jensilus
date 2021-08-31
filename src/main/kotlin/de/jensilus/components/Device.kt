@@ -1,13 +1,16 @@
 package de.jensilus.components
 
+import de.jensilus.addresses.IPv4Address
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
+import de.jensilus.networking.PacketIP
 
-open class Device(protected val defaultNetworkInterfaces: Int) {
+open class Device(defaultNetworkInterfaces: Int) {
 
     val networkInterfaces = mutableListOf<NetworkInterface>()
+    lateinit var ipv4: IPv4Address
 
     init {
         for (i in 0 until defaultNetworkInterfaces) {
@@ -48,6 +51,9 @@ open class Device(protected val defaultNetworkInterfaces: Int) {
         val thisNetI = thisNetIs.first { it.connection!!.isPartOf(other) }
         val otherNetI = otherNetIs.first { it.connection!!.isPartOf(this) }
 
+        thisNetI.onPreDisconnect()
+        otherNetI.onPreDisconnect()
+
         thisNetI.connection = null
         otherNetI.connection = null
 
@@ -60,13 +66,25 @@ open class Device(protected val defaultNetworkInterfaces: Int) {
     }
 
     fun sendPacket(packet: Packet) {
-        for (netI in networkInterfaces) {
+        for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(packet)
         }
     }
 
-    open fun onPacketReceive(netInterface: NetworkInterface, packet: Packet) {
-        println("Packet from " + netInterface.macAddress.toString())
+    fun sendPacketIP(ipv4: IPv4Address) {
+        for (netI in networkInterfaces.filter { it.isConnected }) {
+            netI.sendPacket(PacketIP(netI, ipv4))
+        }
+    }
+
+    inline fun <reified T : Packet> send(init: T.() -> Unit) {
+        val packet = T::class.java.newInstance()
+        packet.apply(init)
+        sendPacket(packet)
+    }
+
+    open fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+        println("Packet from ${receivedOnInterface.macAddress} $packet")
     }
 
 }

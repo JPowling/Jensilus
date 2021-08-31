@@ -1,7 +1,9 @@
 package de.jensilus.main
 
+import de.jensilus.addresses.IPv4Address
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
+import de.jensilus.networking.PacketIP
 
 fun main(args: Array<String>) {
     val switch = NetworkSwitch()
@@ -10,17 +12,20 @@ fun main(args: Array<String>) {
     val d2 = Device(1)
     val d3 = Device(1)
 
-//    println(d1.networkInterfaces.first().macAddress)
-//    println(d2.networkInterfaces.first().macAddress)
-//    println(d3.networkInterfaces.first().macAddress)
-//
-//    println(switch.networkInterfaces[0].macAddress)
-//    println(switch.networkInterfaces[1].macAddress)
-//    println(switch.networkInterfaces[2].macAddress)
+    println(d1.networkInterfaces.first())
+    println(d2.networkInterfaces.first())
+    println(d3.networkInterfaces.first())
+
+    d1.ipv4 = IPv4Address("192.168.0.1")
+    d2.ipv4 = IPv4Address("192.168.0.2")
+    d3.ipv4 = IPv4Address("192.168.0.3")
 
     d1.connect(switch)
     d2.connect(switch)
     d3.connect(switch)
 
-    println(switch.networkInterfaces.first().isConnectedToSwitch)
+    d1.sendPacketIP(IPv4Address("192.168.0.2"))
+    d1.send<PacketIP> {
+        destinationAddress = IPv4Address("192.168.0.2")
+    }
 }

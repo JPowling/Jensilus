@@ -13,6 +13,17 @@ class IPv4Address(val addressBytes: AddressBytes) {
         return AddressBytes(array.toTypedArray())
     }
 
+    override fun toString(): String {
+        return addressBytes.bytes.toIPv4String()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is IPv4Address) {
+            return addressBytes.bytes.contentEquals(other.addressBytes.bytes)
+        }
+        return false
+    }
+
 }
 
 private fun String.isNetmaskFormat(): Boolean {

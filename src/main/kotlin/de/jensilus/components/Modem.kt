@@ -5,7 +5,7 @@ import de.jensilus.networking.Packet
 
 class Modem: Device(0) {
 
-    override fun onPacketReceive(netInterface: NetworkInterface, packet: Packet) {
+    override fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
     }
 
 }
