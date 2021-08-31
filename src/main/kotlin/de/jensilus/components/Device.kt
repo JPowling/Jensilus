@@ -10,6 +10,9 @@ import de.jensilus.networking.PacketIP
 open class Device(defaultNetworkInterfaces: Int) {
 
     val networkInterfaces = mutableListOf<NetworkInterface>()
+    val networkInterface: NetworkInterface
+        get() = networkInterfaces[0]
+
     lateinit var ipv4: IPv4Address
 
     init {
@@ -75,12 +78,6 @@ open class Device(defaultNetworkInterfaces: Int) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(PacketIP(netI, ipv4))
         }
-    }
-
-    inline fun <reified T : Packet> send(init: T.() -> Unit) {
-        val packet = T::class.java.newInstance()
-        packet.apply(init)
-        sendPacket(packet)
     }
 
     open fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
