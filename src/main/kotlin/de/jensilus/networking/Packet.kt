@@ -1,4 +1,5 @@
 package de.jensilus.networking
 
-class Packet {
-}
+import de.jensilus.addresses.IPv4Address
+
+data class Packet(val receiver: IPv4Address, val sender: IPv4Address)

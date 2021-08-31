@@ -5,7 +5,7 @@ import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
 
-open class Device(defaultNetworkInterfaces: Int) {
+open class Device(protected val defaultNetworkInterfaces: Int) {
 
     val networkInterfaces = mutableListOf<NetworkInterface>()
 
@@ -57,6 +57,12 @@ open class Device(defaultNetworkInterfaces: Int) {
 
     private fun isConnected(other: Device): Boolean {
         return networkInterfaces.firstOrNull { it.isConnected && it.connection!!.isPartOf(other) } != null
+    }
+
+    fun sendPacket(packet: Packet) {
+        for (netI in networkInterfaces) {
+            netI.sendPacket(packet)
+        }
     }
 
     open fun onPacketReceive(netInterface: NetworkInterface, packet: Packet) {

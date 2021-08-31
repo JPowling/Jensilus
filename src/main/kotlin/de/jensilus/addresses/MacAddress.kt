@@ -5,7 +5,7 @@ import de.jensilus.exceptions.AddressFormatException
 import de.jensilus.random
 import java.io.Closeable
 
-class MacAddress internal constructor(val bytes: Array<UByte>, val netInterface: NetworkInterface): Closeable {
+class MacAddress internal constructor(val bytes: Array<UByte>, val netInterface: NetworkInterface) : Closeable {
 
     init {
         if (bytes.size != 6) {
@@ -82,6 +82,10 @@ class MacAddress internal constructor(val bytes: Array<UByte>, val netInterface:
 
     override fun hashCode(): Int {
         return bytes.contentHashCode()
+    }
+
+    fun cloneTo(netInterface: NetworkInterface): MacAddress {
+        return MacAddress(bytes, netInterface)
     }
 
 }
