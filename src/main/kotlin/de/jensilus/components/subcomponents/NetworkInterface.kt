@@ -2,8 +2,10 @@ package de.jensilus.components.subcomponents
 
 import de.jensilus.addresses.MacAddress
 import de.jensilus.components.Device
+import de.jensilus.components.NetworkSwitch
 import de.jensilus.main.Settings
 import de.jensilus.networking.Packet
+import de.jensilus.networking.RegistrationPacket
 
 class NetworkInterface(val owner: Device) {
 
@@ -13,16 +15,21 @@ class NetworkInterface(val owner: Device) {
     val isConnected: Boolean
         get() = connection != null
 
+    val isConnectedToSwitch: Boolean
+        get() {
+            connection?.let {
+                return it.getOtherComponent(this).owner is NetworkSwitch
+            }
+            return false
+        }
 
     fun sendPacket(packet: Packet): Boolean {
-        if (isConnected) {
-            connection!!.run {
-                active = true
-                Settings.sleep()
-                active = false
+        connection?.run {
+            active = true
+            Settings.sleep()
+            active = false
 
-                getOtherComponent(this@NetworkInterface).onReceivePacket(packet)
-            }
+            getOtherComponent(this@NetworkInterface).onReceivePacket(packet)
             return true
         }
         return false
@@ -33,7 +40,9 @@ class NetworkInterface(val owner: Device) {
     }
 
     fun onConnect() {
-
+        if (owner !is NetworkSwitch && isConnectedToSwitch) {
+            sendPacket(RegistrationPacket(this))
+        }
     }
 
     fun onDisconnect() {
@@ -49,5 +58,9 @@ class NetworkInterface(val owner: Device) {
 
     override fun hashCode(): Int {
         return macAddress.hashCode()
+    }
+
+    override fun toString(): String {
+        return macAddress.toString()
     }
 }
