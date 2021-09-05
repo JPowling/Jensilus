@@ -12,7 +12,7 @@ object CommandPing : Command("ping", "penis") {
         val destinationAddress = IPv4Address(arguments[0])
 
         for (i in 1..4) {
-            val packetPing = PacketICMP(dispatcher.networkInterface, destinationAddress, Ping(i))
+            val packetPing = PacketICMP(sender, destinationAddress, Ping(i))
             dispatcher.sendPacket(packetPing)
         }
     }
