@@ -13,6 +13,14 @@ class IPv4Address(val addressBytes: AddressBytes) {
         return AddressBytes(array.toTypedArray())
     }
 
+    fun getNetworkBroadcastAddress(subnetmask: SubnetMask): IPv4Address {
+        val array = mutableListOf<UByte>()
+        for (i in 0 until 4) {
+            array += addressBytes.bytes[i] or (subnetmask.bytes[i] xor 0xffffffff.toUByte())
+        }
+        return IPv4Address(AddressBytes(array.toTypedArray()))
+    }
+
     override fun toString(): String {
         return addressBytes.bytes.toIPv4String()
     }

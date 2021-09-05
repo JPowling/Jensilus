@@ -1,11 +1,13 @@
 package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
+import de.jensilus.addresses.Port
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
-import de.jensilus.networking.PacketIP
+import de.jensilus.networking.PacketICMP
+import de.jensilus.networking.PacketUDP
 
 open class Device(defaultNetworkInterfaces: Int) {
 
@@ -73,9 +75,15 @@ open class Device(defaultNetworkInterfaces: Int) {
         }
     }
 
-    fun sendPacketIP(ipv4: IPv4Address) {
+    fun sendPacketICMP(destinationIPv4Address: IPv4Address, body: Any?) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
-            netI.sendPacket(PacketIP(netI, ipv4))
+            netI.sendPacket(PacketICMP(netI, destinationIPv4Address, body))
+        }
+    }
+
+    fun sendPacketUDP(thisPort: Port, destinationIPv4Address: IPv4Address, destinationPort: Port, body: Any?) {
+        for (netI in networkInterfaces.filter { it.isConnected }) {
+            netI.sendPacket(PacketUDP(netI, thisPort, destinationIPv4Address, destinationPort, body))
         }
     }
 
