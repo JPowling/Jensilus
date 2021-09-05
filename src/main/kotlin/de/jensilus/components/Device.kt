@@ -1,20 +1,19 @@
 package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
-import de.jensilus.addresses.Port
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
 import de.jensilus.networking.PacketICMP
 import de.jensilus.networking.PacketUDP
+import de.jensilus.networking.commands.CommandData
 
 open class Device(defaultNetworkInterfaces: Int) {
 
     val networkInterfaces = mutableListOf<NetworkInterface>()
     val networkInterface: NetworkInterface
         get() = networkInterfaces[0]
-
 
     init {
         for (i in 0 until defaultNetworkInterfaces) {
@@ -69,6 +68,10 @@ open class Device(defaultNetworkInterfaces: Int) {
         return networkInterfaces.firstOrNull { it.isConnected && it.connection!!.isPartOf(other) } != null
     }
 
+    fun log(msg: String) {
+        println("From Device [ipv4=${networkInterface.ipv4}]: $msg")
+    }
+
     fun sendPacket(packet: Packet) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(packet)
@@ -81,7 +84,7 @@ open class Device(defaultNetworkInterfaces: Int) {
         }
     }
 
-    fun sendPacketUDP(thisPort: Port, destinationIPv4Address: IPv4Address, destinationPort: Port, body: Any?) {
+    fun sendPacketUDP(thisPort: UShort, destinationIPv4Address: IPv4Address, destinationPort: UShort, body: Any?) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(PacketUDP(netI, thisPort, destinationIPv4Address, destinationPort, body))
         }
@@ -89,6 +92,12 @@ open class Device(defaultNetworkInterfaces: Int) {
 
     open fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
         println("Packet from ${receivedOnInterface.macAddress} $packet")
+
+        val content = packet.body
+
+        if (content is CommandData) {
+            content.owner.onReact(this, packet)
+        }
     }
 
 }

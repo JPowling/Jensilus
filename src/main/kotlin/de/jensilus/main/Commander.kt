@@ -1,12 +1,9 @@
 package de.jensilus.main
 
-import com.google.common.primitives.UnsignedInteger
 import de.jensilus.addresses.IPv4Address
-import de.jensilus.addresses.Port
-import de.jensilus.addresses.SubnetMask
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
-import org.checkerframework.checker.signedness.qual.Unsigned
+import de.jensilus.networking.commands.Commands
 
 fun main(args: Array<String>) {
     val switch = NetworkSwitch()
@@ -27,10 +24,11 @@ fun main(args: Array<String>) {
     d2.connect(switch)
     d3.connect(switch)
 
-    d1.sendPacketICMP(
-        IPv4Address("192.168.0.2").getNetworkBroadcastAddress(SubnetMask("255.255.255.0")), null)
-    println(d1.networkInterface.ipv4.getNetworkBroadcastAddress(SubnetMask("255.255.240.0")))
+//    d1.sendPacketIP(IPv4Address("192.168.0.2"))
 
-    d2.sendPacketUDP(Port(1234), IPv4Address("192.168.0.2"), Port(69), "hallo")
+    Commands.handle(d1, "ping 192.168.0.2")
 
+    while (true) {
+
+    }
 }
