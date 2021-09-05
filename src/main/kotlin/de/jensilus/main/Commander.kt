@@ -15,9 +15,9 @@ fun main(args: Array<String>) {
     println(d2.networkInterfaces.first())
     println(d3.networkInterfaces.first())
 
-    d1.ipv4 = IPv4Address("192.168.0.1")
-    d2.ipv4 = IPv4Address("192.168.0.2")
-    d3.ipv4 = IPv4Address("192.168.0.3")
+    d1.networkInterface.ipv4 = IPv4Address("192.168.0.1")
+    d2.networkInterface.ipv4 = IPv4Address("192.168.0.2")
+    d3.networkInterface.ipv4 = IPv4Address("192.168.0.3")
 
     d1.connect(switch)
     d2.connect(switch)

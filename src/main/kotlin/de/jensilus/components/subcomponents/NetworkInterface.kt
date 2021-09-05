@@ -1,5 +1,6 @@
 package de.jensilus.components.subcomponents
 
+import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.MacAddress
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
@@ -12,6 +13,9 @@ import de.jensilus.networking.PacketRegistrationSwitch
 class NetworkInterface(val owner: Device) {
 
     var macAddress = MacAddress.createMac(this)
+    lateinit var ipv4: IPv4Address
+
+
 
     var connection: Connection? = null
     val isConnected: Boolean

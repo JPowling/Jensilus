@@ -13,7 +13,6 @@ open class Device(defaultNetworkInterfaces: Int) {
     val networkInterface: NetworkInterface
         get() = networkInterfaces[0]
 
-    lateinit var ipv4: IPv4Address
 
     init {
         for (i in 0 until defaultNetworkInterfaces) {
