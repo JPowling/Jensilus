@@ -14,4 +14,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0")
     implementation("com.google.guava:guava:30.1.1-jre")
+    implementation("no.tornado:tornadofx:1.7.20")
 }

@@ -43,7 +43,7 @@ class NetworkSwitch : Device(20) {
 
     private fun getInterfaceToSendOnFor(ipv4: IPv4Address): NetworkInterface? {
         return portToInterface.inverse().run {
-            keys.filter { it.owner.ipv4 == ipv4 }
+            keys.filter { it.ipv4 == ipv4 }
                 .map { get(it) }
                 .randomOrNull() // To simulate chaos when IPv4 Addresses are duplicated
         }
