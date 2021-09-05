@@ -1,7 +1,6 @@
 package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
-import de.jensilus.addresses.Port
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
@@ -81,7 +80,7 @@ open class Device(defaultNetworkInterfaces: Int) {
         }
     }
 
-    fun sendPacketUDP(thisPort: Port, destinationIPv4Address: IPv4Address, destinationPort: Port, body: Any?) {
+    fun sendPacketUDP(thisPort: UShort, destinationIPv4Address: IPv4Address, destinationPort: UShort, body: Any?) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(PacketUDP(netI, thisPort, destinationIPv4Address, destinationPort, body))
         }
