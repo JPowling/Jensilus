@@ -2,6 +2,7 @@ package de.jensilus.components.subcomponents
 
 import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.MacAddress
+import de.jensilus.addresses.SubnetMask
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
 import de.jensilus.main.Settings
@@ -10,11 +11,15 @@ import de.jensilus.networking.PacketDeregistrationSwitch
 import de.jensilus.networking.PacketRegistrationDevice
 import de.jensilus.networking.PacketRegistrationSwitch
 
-class NetworkInterface(val owner: Device) {
+class NetworkInterface(
+    val owner: Device,
+    var ipv4: IPv4Address = IPv4Address("127.0.0.1"),
+    var subnetMask: SubnetMask = SubnetMask("255.255.255.0"),
+) {
 
     var macAddress = MacAddress.createMac(this)
-    lateinit var ipv4: IPv4Address
-
+//    lateinit var ipv4: IPv4Address
+//    lateinit var subnetMask: SubnetMask
 
 
     var connection: Connection? = null

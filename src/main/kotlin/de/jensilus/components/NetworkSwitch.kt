@@ -28,7 +28,12 @@ class NetworkSwitch : Device(20) {
                 is PacketRegistrationSwitch -> connectedSwitches[receivedOnInterface] = packet.switch
                 is PacketDeregistrationSwitch -> connectedSwitches.remove(receivedOnInterface)
 
-                is PacketIP -> {
+                is PacketICMP -> {
+
+                    if (packet.destinationAddress == packet.sender.ipv4.getNetworkBroadcastAddress(packet.sender.subnetMask)) {
+                        networkInterfaces.forEach { it.sendPacket(packet) }
+                    }
+
                     // Send over matching NetworkInterface OR to all other connected switches
                     getInterfaceToSendOnFor(packet.destinationAddress)?.run {
                         sendPacket(packet); return@whenCheck

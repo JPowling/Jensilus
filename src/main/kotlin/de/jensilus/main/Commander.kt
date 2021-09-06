@@ -3,6 +3,7 @@ package de.jensilus.main
 import de.jensilus.addresses.IPv4Address
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
+import de.jensilus.networking.commands.Commands
 
 fun main(args: Array<String>) {
     val switch = NetworkSwitch()
@@ -23,6 +24,11 @@ fun main(args: Array<String>) {
     d2.connect(switch)
     d3.connect(switch)
 
-    d1.sendPacketIP(IPv4Address("192.168.0.2"))
+//    d1.sendPacketIP(IPv4Address("192.168.0.2"))
 
+    Commands.handle(d1, "ping 192.168.0.2")
+
+    while (true) {
+
+    }
 }
