@@ -1,10 +1,13 @@
 package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
+import de.jensilus.addresses.MacAddress
+import de.jensilus.addresses.applications.DHCPServer
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
 import de.jensilus.networking.Packet
+import de.jensilus.networking.PacketEthernet
 import de.jensilus.networking.PacketICMP
 import de.jensilus.networking.PacketUDP
 
@@ -15,10 +18,16 @@ open class Device(defaultNetworkInterfaces: Int) {
         get() = networkInterfaces[0]
 
 
+    private var dhcpServer: DHCPServer
+
     init {
         for (i in 0 until defaultNetworkInterfaces) {
             networkInterfaces.add(NetworkInterface(this))
         }
+
+        dhcpServer = DHCPServer(networkInterface)
+
+        dhcpServer.startServer()
     }
 
     fun connect(other: Device) {
@@ -71,6 +80,12 @@ open class Device(defaultNetworkInterfaces: Int) {
     fun sendPacket(packet: Packet) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(packet)
+        }
+    }
+
+    fun sendPacketEthernet(senderMacAddress: MacAddress, destinationMacAddress: MacAddress, body: Any?){
+        for (netI in networkInterfaces.filter { it.isConnected }) {
+            netI.sendPacket(PacketEthernet(senderMacAddress, destinationMacAddress, body))
         }
     }
 

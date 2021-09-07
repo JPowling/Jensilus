@@ -7,13 +7,21 @@ open class PacketICMP(
     val sender: NetworkInterface,
     val destinationAddress: IPv4Address,
     body: Any?,
-) : Packet(body)
+) : Packet(body) {
+    override fun toString(): String {
+        return "PacketICMP{sender=$sender, destIpv4=$destinationAddress, body=$body"
+    }
+}
 
 
-class PacketUDP(
+open class PacketUDP(
     sender: NetworkInterface,
     val senderPort: UShort,
     destinationAddress: IPv4Address,
     val destinationPort: UShort,
     body: Any?,
-) : PacketICMP(sender, destinationAddress, body)
+) : PacketICMP(sender, destinationAddress, body) {
+    override fun toString(): String {
+        return "PacketUDP{senderIpv4=$sender, senderPort=$senderPort, destIpv4=$destinationPort, destPort=$destinationPort, body=$body}"
+    }
+}

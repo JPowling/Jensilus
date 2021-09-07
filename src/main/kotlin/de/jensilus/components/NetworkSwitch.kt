@@ -2,6 +2,7 @@ package de.jensilus.components
 
 import com.google.common.collect.HashBiMap
 import de.jensilus.addresses.IPv4Address
+import de.jensilus.addresses.MacAddress
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.networking.*
 
@@ -28,6 +29,12 @@ class NetworkSwitch : Device(20) {
                 is PacketRegistrationSwitch -> connectedSwitches[receivedOnInterface] = packet.switch
                 is PacketDeregistrationSwitch -> connectedSwitches.remove(receivedOnInterface)
 
+                is PacketEthernet -> {
+                    getInterfaceToSendFor(packet.destMacAddress)?.run {
+                        sendPacket(packet);return@whenCheck
+                    }
+                }
+
                 is PacketICMP -> {
 
                     if (packet.destinationAddress == packet.sender.ipv4.getNetworkBroadcastAddress(packet.sender.subnetMask)) {
@@ -49,6 +56,14 @@ class NetworkSwitch : Device(20) {
     private fun getInterfaceToSendOnFor(ipv4: IPv4Address): NetworkInterface? {
         return portToInterface.inverse().run {
             keys.filter { it.ipv4 == ipv4 }
+                .map { get(it) }
+                .randomOrNull() // To simulate chaos when IPv4 Addresses are duplicated
+        }
+    }
+
+    private fun getInterfaceToSendFor(mac: MacAddress): NetworkInterface? {
+        return portToInterface.inverse().run {
+            keys.filter { it.macAddress == mac }
                 .map { get(it) }
                 .randomOrNull() // To simulate chaos when IPv4 Addresses are duplicated
         }
