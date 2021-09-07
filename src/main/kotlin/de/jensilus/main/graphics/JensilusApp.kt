@@ -3,7 +3,6 @@ package de.jensilus.main.graphics
 import de.jensilus.main.Settings
 import javafx.event.EventHandler
 import javafx.scene.paint.Color
-import javafx.scene.shape.Circle
 import tornadofx.*
 
 class JensilusView : View("Jensilus " + Settings.version) {
@@ -39,15 +38,14 @@ class JensilusView : View("Jensilus " + Settings.version) {
                 fill = Color.LIGHTGRAY
                 stroke = fill
             }
-            val showPane = pane {
-                prefWidth = windowWidth - currentWidth
-                prefHeight = windowHeight
+            val mainCanvas = canvas(windowWidth - currentWidth, windowHeight) {
+                val g = graphicsContext2D
 
-                for (x in 0..(prefWidth.toInt() + 15) step 15) {
-                    for (y in 0..(prefHeight.toInt() + 15) step 15) {
-                        circle(x, y, 1) {
-                            fill = Color.LIGHTGRAY.darker()
-                        }
+                g.fill = Color.LIGHTGRAY.darker()
+
+                for (x in 0..prefWidth.toInt().plus(15) step 15) {
+                    for (y in 0..prefHeight.toInt().plus(15) step 15) {
+                        g.fillOval(x.toDouble(), y.toDouble(), 1.5, 1.5)
                     }
                 }
             }
@@ -60,12 +58,7 @@ class JensilusView : View("Jensilus " + Settings.version) {
             var lastX = Double.NaN
             var lastY = Double.NaN
 
-            val xStep = (showPane.prefWidth / 15).toInt() * 15 + 15
-            val yStep = (showPane.prefHeight / 15).toInt() * 15 + 15
-
-            val circleList = showPane.getChildList()!!.filterIsInstance<Circle>()
-
-            showPane.onMouseDragged = EventHandler {
+            mainCanvas.onMouseDragged = EventHandler {
                 if (lastX.isNaN()) {
                     lastX = it.x
                     lastY = it.y
@@ -74,30 +67,26 @@ class JensilusView : View("Jensilus " + Settings.version) {
 
                 val offX = it.x - lastX
                 val offY = it.y - lastY
-                lastX = it.x
-                lastY = it.y
-
                 scrollOffsetX += offX
                 scrollOffsetY += offY
 
-                circleList.forEach { c ->
-                    c.centerX += offX
-                    c.centerY += offY
+                val g = mainCanvas.graphicsContext2D
+                g.clearRect(0.0, 0.0, mainCanvas.width, mainCanvas.height)
 
-                    if (c.centerX < 0) {
-                        c.centerX += xStep
-                    } else if (c.centerX > xStep) {
-                        c.centerX -= xStep
-                    }
-                    if (c.centerY < 0) {
-                        c.centerY += yStep
-                    } else if (c.centerY > yStep) {
-                        c.centerY -= yStep
+                for (x in 0..mainCanvas.width.toInt().plus(15) step 15) {
+                    for (y in 0..mainCanvas.height.toInt().plus(15) step 15) {
+                        val currentX = (x + scrollOffsetX + mainCanvas.width) % mainCanvas.width
+                        val currentY = (y + scrollOffsetY + mainCanvas.height) % mainCanvas.height
+
+                        g.fillOval(currentX, currentY, 1.5, 1.5)
                     }
                 }
+
+                lastX = it.x
+                lastY = it.y
             }
 
-            showPane.onMouseClicked = EventHandler {
+            mainCanvas.onMouseClicked = EventHandler {
                 lastX = Double.NaN
                 lastY = Double.NaN
             }
