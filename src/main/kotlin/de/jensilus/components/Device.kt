@@ -13,7 +13,6 @@ open class Device(defaultNetworkInterfaces: Int) {
     val networkInterface: NetworkInterface
         get() = networkInterfaces[0]
 
-
     init {
         for (i in 0 until defaultNetworkInterfaces) {
             networkInterfaces.add(NetworkInterface(this))
