@@ -4,7 +4,6 @@ import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.SubnetMask
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
-import de.jensilus.networking.DHCPServerMessage
 
 fun main(args: Array<String>) {
     val switch = NetworkSwitch()
@@ -25,19 +24,8 @@ fun main(args: Array<String>) {
     d2.connect(switch)
     d3.connect(switch)
 
-    d1.sendPacketUDP(
-        123U,
-        IPv4Address("192.168.0.2").getNetworkBroadcastAddress(SubnetMask("255.255.255.0")),
-        321U,
-        null)
-
-    println(d1.networkInterface.ipv4.getNetworkBroadcastAddress(SubnetMask("255.255.240.0")))
-
-    d2.sendPacketUDP(1234U, IPv4Address("192.168.0.2"), 69U, "hallo")
-    println("-------")
-    d3.sendPacketEthernet(d3.networkInterface.macAddress,
-        d1.networkInterface.macAddress,
-        "EthernetPacket")
+    d1.startServer()
+    d2.startClient()
 
 
 }

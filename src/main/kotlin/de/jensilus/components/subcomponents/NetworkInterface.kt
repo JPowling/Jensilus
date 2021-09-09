@@ -5,6 +5,7 @@ import de.jensilus.addresses.MacAddress
 import de.jensilus.addresses.SubnetMask
 import de.jensilus.components.Device
 import de.jensilus.components.NetworkSwitch
+import de.jensilus.launch
 import de.jensilus.main.Settings
 import de.jensilus.networking.Packet
 import de.jensilus.networking.PacketDeregistrationSwitch
@@ -13,14 +14,12 @@ import de.jensilus.networking.PacketRegistrationSwitch
 
 class NetworkInterface(
     val owner: Device,
-    var ipv4: IPv4Address = IPv4Address("127.0.0.1"),
-    var subnetMask: SubnetMask = SubnetMask("255.255.255.0"),
+    var ipv4: IPv4Address = IPv4Address("0.0.0.0"),
+    var subnetMask: SubnetMask = SubnetMask("255.255.255.255"),
 ) {
 
-    var macAddress = MacAddress.createMac(this)
-//    lateinit var ipv4: IPv4Address
-//    lateinit var subnetMask: SubnetMask
 
+    var macAddress = MacAddress.createMac(this)
 
     var connection: Connection? = null
     val isConnected: Boolean
@@ -35,20 +34,24 @@ class NetworkInterface(
         }
     val isConnectedToDevice = isConnected && !isConnectedToSwitch
 
-    fun sendPacket(packet: Packet): Boolean {
-        connection?.run {
-            active = true
-            Settings.sleep()
-            active = false
 
-            getOtherComponent(this@NetworkInterface).onReceivePacket(packet)
-            return true
+    fun sendPacket(packet: Packet): Boolean {
+        var succes = false
+        launch {
+            connection?.run {
+                active = true
+                Settings.sleep()
+                active = false
+
+                getOtherComponent(this@NetworkInterface).onReceivePacket(packet)
+                succes = true
+            }
         }
-        return false
+        return succes
     }
 
     fun onReceivePacket(packet: Packet) {
-        owner.onPacketReceive(this, packet)
+        owner.onDataReceive(this, packet)
     }
 
     fun onConnect() {

@@ -4,6 +4,10 @@ class IPv4Address(val addressBytes: AddressBytes) {
 
     constructor(addressBytes: String) : this(AddressBytes.fromString(addressBytes))
 
+    companion object {
+        val LOCALBROADCAST = IPv4Address("255.255.255.255")
+    }
+
     fun getNetworkAddressBytes(subnetmask: SubnetMask): AddressBytes {
         val array = mutableListOf<UByte>()
 

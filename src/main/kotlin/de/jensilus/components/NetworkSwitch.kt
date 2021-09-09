@@ -21,7 +21,7 @@ class NetworkSwitch : Device(20) {
 //        }
     }
 
-    override fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+    override fun onDataReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
         run whenCheck@{
             when (packet) {
                 is PacketRegistrationDevice -> portToInterface[receivedOnInterface] = packet.toRegister
@@ -38,6 +38,10 @@ class NetworkSwitch : Device(20) {
                 is PacketICMP -> {
 
                     if (packet.destinationAddress == packet.sender.ipv4.getNetworkBroadcastAddress(packet.sender.subnetMask)) {
+                        networkInterfaces.forEach { it.sendPacket(packet) }
+                    }
+
+                    if (packet.destinationAddress == IPv4Address.LOCALBROADCAST) {
                         networkInterfaces.forEach { it.sendPacket(packet) }
                     }
 

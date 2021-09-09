@@ -1,20 +1,33 @@
 package de.jensilus.networking
 
 import de.jensilus.addresses.IPv4Address
+import de.jensilus.addresses.MacAddress
 import de.jensilus.components.subcomponents.NetworkInterface
 
-class DHCPServerMessage(
-    val ownIPv4Address: IPv4Address,
-    val destIPv4Address: IPv4Address,
+data class DHCPMessage(
+    val op: DHCPMessageType,
+    val xid: UInt,
+    val ciaddr: IPv4Address?,
+    val yiaddr: IPv4Address,
+    val siaddr: IPv4Address,
+    val chaddr: MacAddress,
+    val sname: String?,
+    val options: Any?
 ) {
 
     val serverPort = 67
     val clientPort = 68
 
+
+
 }
 
-class DHCPClientMessage(
 
-) {
-
+enum class DHCPMessageType{
+    DISCOVER,
+    OFFER,
+    REQUEST,
+    ACK,
+    NAK,
+    INFORM
 }

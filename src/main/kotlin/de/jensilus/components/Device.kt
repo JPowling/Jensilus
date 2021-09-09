@@ -2,14 +2,13 @@ package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.MacAddress
+import de.jensilus.addresses.applications.DHCPClient
 import de.jensilus.addresses.applications.DHCPServer
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
-import de.jensilus.networking.Packet
-import de.jensilus.networking.PacketEthernet
-import de.jensilus.networking.PacketICMP
-import de.jensilus.networking.PacketUDP
+import de.jensilus.launch
+import de.jensilus.networking.*
 
 open class Device(defaultNetworkInterfaces: Int) {
 
@@ -19,14 +18,23 @@ open class Device(defaultNetworkInterfaces: Int) {
 
 
     private var dhcpServer: DHCPServer
+    private var dhcpClient: DHCPClient
 
     init {
         for (i in 0 until defaultNetworkInterfaces) {
             networkInterfaces.add(NetworkInterface(this))
         }
 
-        dhcpServer = DHCPServer(networkInterface)
+        dhcpServer = DHCPServer(this, networkInterface)
+        dhcpClient = DHCPClient(this, networkInterface)
 
+    }
+
+    fun startClient() {
+        dhcpClient.startClient()
+    }
+
+    fun startServer() {
         dhcpServer.startServer()
     }
 
@@ -83,7 +91,7 @@ open class Device(defaultNetworkInterfaces: Int) {
         }
     }
 
-    fun sendPacketEthernet(senderMacAddress: MacAddress, destinationMacAddress: MacAddress, body: Any?){
+    fun sendPacketEthernet(senderMacAddress: MacAddress, destinationMacAddress: MacAddress, body: Any?) {
         for (netI in networkInterfaces.filter { it.isConnected }) {
             netI.sendPacket(PacketEthernet(senderMacAddress, destinationMacAddress, body))
         }
@@ -101,8 +109,57 @@ open class Device(defaultNetworkInterfaces: Int) {
         }
     }
 
-    open fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
-        println("Packet from ${receivedOnInterface.macAddress} $packet")
+    open fun onDataReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+        println("incoming packet at ${receivedOnInterface.macAddress} $packet")
+
+        when (packet) {
+
+            is PacketEthernet -> {
+                onPacketEthernetReceive(receivedOnInterface, packet)
+            }
+
+            //PacketUDP has to be in front of PacketICMP since every PacketUDP is a PacketICMP
+            //and should still be interpreted as a PacketUDP
+            is PacketUDP -> {
+                onPacketUDPReceive(receivedOnInterface, packet)
+            }
+
+            is PacketICMP -> {
+                onPacketICMPReceive(receivedOnInterface, packet)
+            }
+
+
+//            is Packet -> { onPacketReceive(receivedOnInterface, packet) }
+        }
+    }
+
+    fun onPacketReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+
+    }
+
+    fun onPacketEthernetReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+
+    }
+
+    fun onPacketICMPReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+
+    }
+
+    fun onPacketUDPReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
+        when (packet.body) {
+            is DHCPMessage -> {
+                when (packet.body.op) {
+                    DHCPMessageType.DISCOVER, DHCPMessageType.REQUEST -> {
+                        if (dhcpServer.isActive) dhcpServer.receive(packet.body)
+                        else println("${receivedOnInterface.macAddress}: silently discarded packet since server is offline")
+                    }
+
+                    DHCPMessageType.OFFER, DHCPMessageType.ACK, DHCPMessageType.NAK, DHCPMessageType.INFORM -> {
+
+                    }
+                }
+            }
+        }
     }
 
 }
