@@ -51,7 +51,9 @@ class NetworkInterface(
     }
 
     fun onReceivePacket(packet: Packet) {
-        owner.onDataReceive(this, packet)
+        launch {
+            owner.onDataReceive(this@NetworkInterface, packet)
+        }
     }
 
     fun onConnect() {

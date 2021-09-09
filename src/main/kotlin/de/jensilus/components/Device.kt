@@ -2,12 +2,12 @@ package de.jensilus.components
 
 import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.MacAddress
-import de.jensilus.addresses.applications.DHCPClient
-import de.jensilus.addresses.applications.DHCPServer
+import de.jensilus.applications.DHCPClient
+import de.jensilus.applications.DHCPServer
 import de.jensilus.components.subcomponents.Connection
 import de.jensilus.components.subcomponents.NetworkInterface
 import de.jensilus.exceptions.NoConnectionException
-import de.jensilus.launch
+import de.jensilus.main.World
 import de.jensilus.networking.*
 
 open class Device(defaultNetworkInterfaces: Int) {
@@ -21,6 +21,7 @@ open class Device(defaultNetworkInterfaces: Int) {
     private var dhcpClient: DHCPClient
 
     init {
+        World.devices.add(this)
         for (i in 0 until defaultNetworkInterfaces) {
             networkInterfaces.add(NetworkInterface(this))
         }
@@ -110,7 +111,7 @@ open class Device(defaultNetworkInterfaces: Int) {
     }
 
     open fun onDataReceive(receivedOnInterface: NetworkInterface, packet: Packet) {
-        println("incoming packet at ${receivedOnInterface.macAddress} $packet")
+//        println("incoming packet at ${receivedOnInterface.macAddress} $packet")
 
         when (packet) {
 
@@ -129,7 +130,7 @@ open class Device(defaultNetworkInterfaces: Int) {
             }
 
 
-//            is Packet -> { onPacketReceive(receivedOnInterface, packet) }
+            else -> { onPacketReceive(receivedOnInterface, packet) }
         }
     }
 
@@ -151,11 +152,11 @@ open class Device(defaultNetworkInterfaces: Int) {
                 when (packet.body.op) {
                     DHCPMessageType.DISCOVER, DHCPMessageType.REQUEST -> {
                         if (dhcpServer.isActive) dhcpServer.receive(packet.body)
-                        else println("${receivedOnInterface.macAddress}: silently discarded packet since server is offline")
+//                        else println("${receivedOnInterface.macAddress}: silently discarded packet since server is offline")
                     }
 
                     DHCPMessageType.OFFER, DHCPMessageType.ACK, DHCPMessageType.NAK, DHCPMessageType.INFORM -> {
-
+                        if (dhcpClient.isActive) dhcpClient.receive(packet.body)
                     }
                 }
             }

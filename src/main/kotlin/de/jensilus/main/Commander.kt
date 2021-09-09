@@ -11,21 +11,41 @@ fun main(args: Array<String>) {
     val d1 = Device(1)
     val d2 = Device(1)
     val d3 = Device(1)
+    val d4 = Device(1)
+    val d5 = Device(1)
+
+
 
     println(d1.networkInterfaces.first())
     println(d2.networkInterfaces.first())
-    println(d3.networkInterfaces.first())
+//    println(d3.networkInterfaces.first())
 
-    d1.networkInterface.ipv4 = IPv4Address("192.168.0.1")
-    d2.networkInterface.ipv4 = IPv4Address("192.168.0.2")
-    d3.networkInterface.ipv4 = IPv4Address("192.168.0.3")
 
     d1.connect(switch)
     d2.connect(switch)
     d3.connect(switch)
+//    d4.connect(switch)
+//    d5.connect(switch)
 
     d1.startServer()
-    d2.startClient()
+    d2.startServer()
 
+
+    d3.startClient()
+//    d5.startClient()
+
+//    Thread.sleep(2000)
+//    println()
+//    println("---------------")
+//    println()
+//    d4.startClient()
+
+    Thread.sleep(5000)
+
+    println(d3.networkInterface.ipv4)
+    println(d4.networkInterface.ipv4)
+    println(d5.networkInterface.ipv4)
+
+    Thread.sleep(20000)
 
 }

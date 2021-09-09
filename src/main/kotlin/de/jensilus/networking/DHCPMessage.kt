@@ -2,7 +2,7 @@ package de.jensilus.networking
 
 import de.jensilus.addresses.IPv4Address
 import de.jensilus.addresses.MacAddress
-import de.jensilus.components.subcomponents.NetworkInterface
+import javax.crypto.Mac
 
 data class DHCPMessage(
     val op: DHCPMessageType,
@@ -11,16 +11,10 @@ data class DHCPMessage(
     val yiaddr: IPv4Address,
     val siaddr: IPv4Address,
     val chaddr: MacAddress,
+    val shaddr: MacAddress?,
     val sname: String?,
     val options: Any?
-) {
-
-    val serverPort = 67
-    val clientPort = 68
-
-
-
-}
+)
 
 
 enum class DHCPMessageType{
